@@ -46,10 +46,6 @@ var Generator = module.exports = function Generator(args, options) {
     args: args
   });
 
-  this.hookFor('angular-deployd:deployd', {
-    args: args
-  });
-
   this.hookFor('angular:main', {
     args: args
   });
@@ -73,7 +69,14 @@ var Generator = module.exports = function Generator(args, options) {
     this.installDependencies({ skipInstall: this.options['skip-install'] });
   });
 
+  this.hookFor('angular-deployd:deployd', {
+    args: args
+  });
+
   this.pkg = JSON.parse(this.readFileAsString(path.join(__dirname, '../package.json')));
+
+  
+
 };
 
 util.inherits(Generator, yeoman.generators.Base);
