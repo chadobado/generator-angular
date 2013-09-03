@@ -46,6 +46,10 @@ var Generator = module.exports = function Generator(args, options) {
     args: args
   });
 
+  this.hookFor('angular-deployd:deployd', {
+    args: args
+  });
+
   this.hookFor('angular:main', {
     args: args
   });

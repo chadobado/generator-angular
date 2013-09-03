@@ -12,11 +12,9 @@ function Generator() {
 
 util.inherits(Generator, yeoman.generators.Base);
 
-Generator.prototype.setupEnv = function setupEnv() {
-  // Copies the contents of the generator `templates`
-  // directory into your users new application path
-  this.sourceRoot(path.join(__dirname, '../templates/common'));
+Generator.prototype.setupDeployd = function setupDeployd() {
+	this.sourceRoot(path.join(__dirname, '../templates/deployd'));
   this.directory('root', '.', true);
-  this.copy('gitignore', '.gitignore');
+  this.copy('type-loader.js','./node_modules/deployd/lib/type-loader.js')
 
 };

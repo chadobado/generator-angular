@@ -15,6 +15,7 @@ var mountFolder = function (connect, dir) {
 module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
   require('time-grunt')(grunt);
+  var proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
 
   // configurable paths
   var yeomanConfig = {
@@ -27,6 +28,34 @@ module.exports = function (grunt) {
   } catch (e) {}
 
   grunt.initConfig({
+    deployd: {
+     dev: {
+        options: {
+          port: 7777,
+          db: {
+            host: 'localhost',
+            port: 27017,
+            name: 'development'
+          },
+          env: 'development'
+        }
+      },
+      prod: {
+        options: {
+          port: 7777,
+          db: {
+            port: 27017,
+            name: 'production',
+            host: 'localhost',
+            credentials: {
+              username: 'prod_user',
+              password: 'prod_pass'
+            }
+          },
+          env: 'production'
+        }
+      }
+    },
     yeoman: yeomanConfig,
     watch: {
       coffee: {
@@ -80,7 +109,8 @@ module.exports = function (grunt) {
             return [
               lrSnippet,
               mountFolder(connect, '.tmp'),
-              mountFolder(connect, yeomanConfig.app)
+              mountFolder(connect, yeomanConfig.app),
+              proxySnippet
             ];
           }
         }
@@ -103,7 +133,20 @@ module.exports = function (grunt) {
             ];
           }
         }
-      }
+      },
+      proxies: [
+        {
+          context: '/api',
+          host: 'localhost',
+          port: 7777, // port should match deployd port
+          https: false,
+          changeOrigin: true,
+          rewrite: {
+            '^/api/dpd.js': '/dpd.js',
+            '^/api': '' // prefix all api requests with /api ( ie. /api/products )
+          }
+        }
+      ]
     },
     open: {
       server: {
@@ -344,6 +387,9 @@ module.exports = function (grunt) {
     }
   });
 
+  grunt.loadNpmTasks('grunt-connect-proxy');
+  grunt.loadNpmTasks('grunt-deployd');
+
   grunt.registerTask('server', function (target) {
     if (target === 'dist') {
       return grunt.task.run(['build', 'open', 'connect:dist:keepalive']);
@@ -353,7 +399,9 @@ module.exports = function (grunt) {
       'clean:server',
       'concurrent:server',
       'autoprefixer',
+      'configureProxies',
       'connect:livereload',
+      'deployd:dev',
       'open',
       'watch'
     ]);
