@@ -145,6 +145,19 @@ module.exports = function (grunt) {
             '^/api/dpd.js': '/dpd.js',
             '^/api': '' // prefix all api requests with /api ( ie. /api/products )
           }
+
+        },
+        {
+          context: '/socket.io',
+          host: 'localhost',
+          port: 7777, // port should match deployd port
+          https: false,
+          changeOrigin: true,
+          rewrite: {
+            '^/api/socket.io': '/socket.io',
+            '^/api': '' // prefix all api requests with /api ( ie. /api/products )
+          }
+
         }
       ]
     },
